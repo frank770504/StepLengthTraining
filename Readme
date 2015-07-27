@@ -1,1 +1,61 @@
-init
+1. "python train.py filename" can do linear regression and find the parameter
+1.1 example:
+	$ python train.py training_table
+	Formula of Linear Regression
+	(0.00489453226173*speed) + (0.00156970490017*height) + (8.96974228671e-06) = steplength
+
+2. The format for thr training data
+   each column is a item in the formula, and it is okay to add item or remove item by adding a new
+   column or removing one of them.
+2.1 example
+    oringinal table
+	speed height steplength
+	50 175 0.5273107933
+	60 175 0.5928
+	70 175 0.61277
+	80 175 0.6519
+	90 175 0.74458
+	100 175 0.77122
+	110 175 0.79275
+	120 175 0.7902
+	130 175 0.88711
+	140 175 0.9316770186
+	150 175 1.103448276
+    add age
+	speed height age steplength
+	50 175 27 0.5273107933
+	60 175 27 0.5928
+	70 175 27 0.61277
+	80 175 27 0.6519
+	90 175 27 0.74458
+	100 175 27 0.77122
+	110 175 27 0.79275
+	120 175 27 0.7902
+	130 175 27 0.88711
+	140 175 27 0.9316770186
+	150 175 27 1.103448276
+
+	result: 
+		$ python train.py training_table
+		Formula of Linear Regression
+		(0.00489453226173*speed) + (0.00153320944898*height) + (0.000236552314985*age) + (8.76119685131e-06) = steplength
+
+    remove height
+	speed steplength
+	50 0.5273107933
+	60 0.5928
+	70 0.61277
+	80 0.6519
+	90 0.74458
+	100 0.77122
+	110 0.79275
+	120 0.7902
+	130 0.88711
+	140 0.9316770186
+	150 1.103448276
+
+	result:
+		$ python train.py training_table
+		Formula of Linear Regression
+		(0.00489453226173*speed) + (0.274707327273) = steplength
+
