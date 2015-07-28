@@ -39,6 +39,12 @@ pA = np.linalg.pinv(A)
 # x = pinv(A)*B
 x = pA*B
 
+prB = A*x
+
+Err = np.square(prB - B)
+
+MSE = np.sum(Err) / Err.shape[0]
+
 mapper = []
 
 for i in range(0, len(names)-1, 1):
@@ -56,3 +62,4 @@ formatter += " = {}"
 # print the result
 print "Formula of Linear Regression"
 print formatter.format(*mapper)
+print "Mean square error for this training data is {}".format(MSE)
