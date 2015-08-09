@@ -1,6 +1,10 @@
 import os
 import sys
 import numpy as np
+import matplotlib
+
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
 
 A = np.array([])
 B = np.array([])
@@ -63,3 +67,24 @@ formatter += " = {}"
 print "Formula of Linear Regression"
 print formatter.format(*mapper)
 print "Mean square error for this training data is {}".format(MSE)
+
+sp_ind = names.index('speed')
+hg_ind = names.index('height')
+
+
+minA = np.mean(A, axis=0)
+minA[0,sp_ind] = np.amin(A[:,sp_ind]) - 10;
+minB = minA*x
+maxA = np.mean(A, axis=0)
+maxA[0,sp_ind] = np.amax(A[:,sp_ind]) + 10
+maxB = maxA*x
+
+#plot a speed vs step length figure
+f = plt.figure(figsize=(8,5))
+plt.plot( A[:,sp_ind], B , '.')
+plt.plot([minA.item(0), maxA.item(0)],[minB.item(0), maxB.item(0)], 'r')
+plt.title('speed(bpm) vs step length')
+plt.xlabel('speed(bpm)')
+plt.ylabel('step length(m)')
+#plt.show()
+plt.savefig('sp_vs_sl.png')
