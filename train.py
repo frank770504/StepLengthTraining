@@ -13,23 +13,25 @@ f_names = sys.argv;
 f_num = len(sys.argv);
 f_names = f_names[1:f_num];
 
-f = open(f_names[0], 'r')
 
-# get item name
-names = f.readline()
-names = names.strip();
-names = names.split(" ");
+for name in f_names:
+	f = open(name, 'r')
 
-# get the training data: A, and value vector: B
-# The last column is B, and A is the rest part
-for line in f.readlines():
-	t = line.strip();
-	t = t.split(" ")
-	tA = np.array(t[:len(names)-1])
-	tA = np.append(tA, '1')
-	tB = np.array(t[len(names)-1])
-	A = np.vstack([A,tA]) if A.size else tA
-	B = np.vstack([B,tB]) if B.size else tB
+	# get item name
+	names = f.readline()
+	names = names.strip();
+	names = names.split(" ");
+
+	# get the training data: A, and value vector: B
+	# The last column is B, and A is the rest part
+	for line in f.readlines():
+		t = line.strip();
+		t = t.split(" ")
+		tA = np.array(t[:len(names)-1])
+		tA = np.append(tA, '1')
+		tB = np.array(t[len(names)-1])
+		A = np.vstack([A,tA]) if A.size else tA
+		B = np.vstack([B,tB]) if B.size else tB
 
 A = A.astype(np.float)
 A = np.matrix(A)
