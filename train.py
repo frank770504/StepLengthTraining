@@ -13,6 +13,7 @@ f_names = sys.argv;
 f_num = len(sys.argv);
 f_names = f_names[1:f_num];
 
+#TODO analyze the data with age and gender
 
 for name in f_names:
 	f = open(name, 'r')
@@ -26,6 +27,8 @@ for name in f_names:
 	# The last column is B, and A is the rest part
 	for line in f.readlines():
 		t = line.strip();
+		if not t or t.isspace(): #skip the space line
+			continue
 		t = t.split(" ")
 		tA = np.array(t[:len(names)-1])
 		tA = np.append(tA, '1')
