@@ -2,90 +2,132 @@ import os
 import sys
 import numpy as np
 import matplotlib
-
-matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
-A = np.array([])
-B = np.array([])
+class sl_training_data:
+	def __init__(self, speed, height, age, gender, steplength):
+		self.speed = speed
+		self.height = height
+		self.age = age
+		self.gender = gender
+		self.steplength = steplength
 
-f_names = sys.argv;
-f_num = len(sys.argv);
-f_names = f_names[1:f_num];
-
-#TODO analyze the data with age and gender
-
-for name in f_names:
+def read_training_data(name):
 	f = open(name, 'r')
-
 	# get item name
 	names = f.readline()
 	names = names.strip();
 	names = names.split(" ");
-
+	training_nplist = np.array([])
 	# get the training data: A, and value vector: B
 	# The last column is B, and A is the rest part
 	for line in f.readlines():
-		t = line.strip();
-		if not t or t.isspace(): #skip the space line
+		tmp = line.strip();
+		if not tmp or tmp.isspace(): #skip the space line
 			continue
-		t = t.split(" ")
-		tA = np.array(t[:len(names)-1])
-		tA = np.append(tA, '1')
-		tB = np.array(t[len(names)-1])
-		A = np.vstack([A,tA]) if A.size else tA
-		B = np.vstack([B,tB]) if B.size else tB
+		tmp = tmp.split(" ")
+		ind = names.index('speed')
+		speed = float(tmp[ind])
+		ind = names.index('height')
+		height = float(tmp[ind])
+		ind = names.index('steplength')
+		steplength = float(tmp[ind])
+		ind = names.index('age')
+		age = float(tmp[ind])
+		ind = names.index('gender') # gender is a string 'Male'/'Female'
+		gender = tmp[ind]
+		#convert to float
+		training_tmp = sl_training_data(speed, height, age, gender, steplength)
+		training_tmp = np.array([training_tmp])
+		training_nplist = np.hstack([training_nplist, training_tmp])\
+			if training_nplist.size>0 else training_tmp
+	return training_nplist
 
-A = A.astype(np.float)
-A = np.matrix(A)
-B = B.astype(np.float)
-B = np.matrix(B)
+def get_training_matrix(training_data_nplist):
+	A = np.array([])
+	B = np.array([])
+	c = 0
+	for t_data in training_data_nplist:
+		tA = np.array([t_data.speed, t_data.height, 1])
+		tB = np.array([t_data.steplength])
+		A = np.vstack([A, tA]) if A.size else tA
+		B = np.vstack([B, tB]) if B.size else tB
+		# make sure A ans B is ok to use
+	return (A, B)
 
-# doing psuedo inverse
-pA = np.linalg.pinv(A)
+def linear_regression(A, B):
+	# doing psuedo inverse
+	pA = np.linalg.pinv(A)
 
-# Ax = B
-# x = pinv(A)*B
-x = pA*B
+	# Ax = B
+	# x = pinv(A)*B
+	x = np.matrix(pA)*np.matrix(B)
+	return x
 
-prB = A*x
+def get_mean_square_error(training_data_nplist, x):
+	A, B = get_training_matrix(training_data_nplist)
+	preB = np.matrix(A)*np.matrix(x)
+	Err = np.square(preB - B)
+	MSE = np.sum(Err) / Err.shape[0]
+	return MSE
 
-Err = np.square(prB - B)
+def print_result(x):
+	mapper = []
+	names = ['speed', 'height', 'steplength']
+	for i in range(0, len(names)-1, 1):
+	       tarr = str(x.item(i))+"*"+names[i]
+	       mapper.append(tarr)
 
-MSE = np.sum(Err) / Err.shape[0]
+	mapper.append(str(x.item(len(names)-1)))
+	mapper.append(names[-1])
 
-mapper = []
+	formatter = "({})"
+	for i in range(0, len(mapper)-2, 1):
+	       formatter += " + ({})"
+	formatter += " = {}"
 
-for i in range(0, len(names)-1, 1):
-	tarr = str(x.item(i))+"*"+names[i]
-	mapper.append(tarr)
+	# print the result
+	print "Formula of Linear Regression"
+	print formatter.format(*mapper)
 
-mapper.append(str(x.item(len(names)-1)))
-mapper.append(names[-1])
 
-formatter = "({})"
-for i in range(0, len(mapper)-2, 1):
-	formatter += " + ({})"
-formatter += " = {}"
+'''
+main scrip
+'''
 
-# print the result
-print "Formula of Linear Regression"
-print formatter.format(*mapper)
-print "Mean square error for this training data is {}".format(MSE)
+f_names = sys.argv;
+f_names = f_names[1:];
 
-sp_ind = names.index('speed')
-hg_ind = names.index('height')
+training_data_nplist = np.array([])
 
+for name in f_names:
+	training_nplist = read_training_data(name)
+	training_data_nplist = np.hstack([training_data_nplist, training_nplist])\
+		if training_data_nplist.size else training_nplist
+
+A, B = get_training_matrix(training_data_nplist)
+
+x = linear_regression(A, B)
+
+print_result(x)
+
+MSE = get_mean_square_error(training_data_nplist, x)
+
+print 'mean square error is {}'.format(MSE)
+
+#TODO analyze the data with age and gender
+
+sp_ind = 0
 
 minA = np.mean(A, axis=0)
-minA[0,sp_ind] = np.amin(A[:,sp_ind]) - 10;
-minB = minA*x
+minA[sp_ind] = np.amin(A[:,sp_ind]) - 10;
+minB = np.matrix(minA)*np.matrix(x)
 maxA = np.mean(A, axis=0)
-maxA[0,sp_ind] = np.amax(A[:,sp_ind]) + 10
-maxB = maxA*x
+maxA[sp_ind] = np.amax(A[:,sp_ind]) + 10
+maxB = np.matrix(maxA)*np.matrix(x)
 
 #plot a speed vs step length figure
-f = plt.figure(figsize=(8,5))
+f = plt.figure()
 plt.plot( A[:,sp_ind], B , '.')
 plt.plot([minA.item(0), maxA.item(0)],[minB.item(0), maxB.item(0)], 'r')
 plt.title('speed(bpm) vs step length')
