@@ -178,22 +178,53 @@ for name in f_names:
 	training_data_nplist = np.hstack([training_data_nplist, training_nplist])\
 		if training_data_nplist.size else training_nplist
 
-stump = age_decision_stump(training_data_nplist)
+F, M = get_gender_split_nplist(training_data_nplist)
 
-L, R = get_age_split_nplist(training_data_nplist, stump[0])
-xL, MSEL, AL, BL = train_one_set(L) if L.size > 0 else (-1, 0)
-xR, MSER, AR, BR = train_one_set(R) if R.size > 0 else (-1, 0)
+stump = age_decision_stump(M)
 
+L, R = get_age_split_nplist(M, stump[0])
+xL, MSEL, AL, BL = train_one_set(L) if L.size > 0 else (-1, 0, 0, 0)
+xR, MSER, AR, BR = train_one_set(R) if R.size > 0 else (-1, 0, 0, 0)
+
+print 'For Male'
 print 'The stump age is {}'.format(stump[0])
 print ""
-print 'The curve for age < {}: '.format(stump[0])
-print_result(xL)
-print 'mean square error is {}'.format(MSEL)
+if L.size <= 0:
+	print 'all the age is larger than {}'.format(stump[0])
+else:
+	print 'The curve for age < {}: '.format(stump[0])
+	print_result(xL)
+	print 'mean square error is {}'.format(MSEL)
 print ""
 print ""
 print 'The curve for age > {}: '.format(stump[0])
 print_result(xR)
 print 'mean square error is {}'.format(MSER)
 
-plot_sp_sl(AL, BL, xL, 'L')
-plot_sp_sl(AR, BR, xR, 'R')
+plot_sp_sl(AL, BL, xL, 'Male_L')
+plot_sp_sl(AR, BR, xR, 'Male_R')
+
+print ""
+stump = age_decision_stump(M)
+
+L, R = get_age_split_nplist(M, stump[0])
+xL, MSEL, AL, BL = train_one_set(L) if L.size > 0 else (-1, 0, 0, 0)
+xR, MSER, AR, BR = train_one_set(R) if R.size > 0 else (-1, 0, 0, 0)
+
+print 'For Female'
+print 'The stump age is {}'.format(stump[0])
+print ""
+if L.size <= 0:
+	print 'all the age is larger than {}'.format(stump[0])
+else:
+	print 'The curve for age < {}: '.format(stump[0])
+	print_result(xL)
+	print 'mean square error is {}'.format(MSEL)
+print ""
+print ""
+print 'The curve for age > {}: '.format(stump[0])
+print_result(xR)
+print 'mean square error is {}'.format(MSER)
+
+plot_sp_sl(AL, BL, xL, 'Female_L')
+plot_sp_sl(AR, BR, xR, 'Female_R')
