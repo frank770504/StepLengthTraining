@@ -1,61 +1,59 @@
 1. "python train.py filename" can do linear regression and find the parameter
 1.1 example:
-	$ python train.py training_table
-	Formula of Linear Regression
-	(0.00489453226173*speed) + (0.00156970490017*height) + (8.96974228671e-06) = steplength
+
+For Male
+The stump age is 37.5
+
+The curve for age < 37.5: 
+Formula of Linear Regression
+(0.00392440666077*speed) + (0.0104636623787*height) + (-1.48032350887) = steplength
+mean square error is 0.00357986873979
+
+
+The curve for age > 37.5: 
+Formula of Linear Regression
+(0.000954396561379*speed) + (0.00325147800186*height) + (1.92395148039e-05) = steplength
+mean square error is 2.10499357961e-05
+
+For Female
+The stump age is 37.5
+
+The curve for age < 37.5: 
+Formula of Linear Regression
+(0.00392440666077*speed) + (0.0104636623787*height) + (-1.48032350887) = steplength
+mean square error is 0.00357986873979
+
+
+The curve for age > 37.5: 
+Formula of Linear Regression
+(0.000954396561379*speed) + (0.00325147800186*height) + (1.92395148039e-05) = steplength
+mean square error is 2.10499357961e-05
+
 
 2. The format for thr training data
-   each column is a item in the formula, and it is okay to add item or remove item by adding a new
-   column or removing one of them.
+   It must contain speed, height, steplength, age and gender
 2.1 example
-    oringinal table
-	speed height steplength
-	50 175 0.5273107933
-	60 175 0.5928
-	70 175 0.61277
-	80 175 0.6519
-	90 175 0.74458
-	100 175 0.77122
-	110 175 0.79275
-	120 175 0.7902
-	130 175 0.88711
-	140 175 0.9316770186
-	150 175 1.103448276
-    add age
-	speed height age steplength
-	50 175 27 0.5273107933
-	60 175 27 0.5928
-	70 175 27 0.61277
-	80 175 27 0.6519
-	90 175 27 0.74458
-	100 175 27 0.77122
-	110 175 27 0.79275
-	120 175 27 0.7902
-	130 175 27 0.88711
-	140 175 27 0.9316770186
-	150 175 27 1.103448276
 
-	result: 
-		$ python train.py training_table
-		Formula of Linear Regression
-		(0.00489453226173*speed) + (0.00153320944898*height) + (0.000236552314985*age) + (8.76119685131e-06) = steplength
-
-    remove height
-	speed steplength
-	50 0.5273107933
-	60 0.5928
-	70 0.61277
-	80 0.6519
-	90 0.74458
-	100 0.77122
-	110 0.79275
-	120 0.7902
-	130 0.88711
-	140 0.9316770186
-	150 1.103448276
-
-	result:
-		$ python train.py training_table
-		Formula of Linear Regression
-		(0.00489453226173*speed) + (0.274707327273) = steplength
+speed height steplength age gender
+50 175 0.5273107933 27 Male
+60 175 0.5928 27 Male
+70 175 0.61277 27 Male
+80 175 0.6519 27 Male
+90 175 0.74458 27 Male
+100 175 0.77122 27 Male
+110 175 0.79275 27 Male
+120 175 0.7902 27 Male
+130 175 0.88711 27 Male
+140 175 0.9316770186 27 Male
+150 175 1.103448276 27 Male
+50 175 0.6292688682 27 Male
+90 175 0.6809756679 27 Male
+90 175 0.6837764632 27 Male
+100 175 0.7374382011 27 Male
+110 175 0.7622604835 27 Male
+120 175 0.8008970046 27 Male
+130 175 0.796349798 27 Male
+140 175 0.8174943797 27 Male
+150 175 1.0311404413 27 Male
+160 175 1.0394218043 27 Male
 
