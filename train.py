@@ -91,7 +91,7 @@ def get_age_split_nplist(training_data_nplist, th):
 	R = np.array([])
 	for d in training_data_nplist:
 		dnp = np.array([d])
-		if d.age > th:
+		if d.age >= th:
 			R = np.hstack([R, dnp]) if R.size > 0 else dnp
 		elif d.age < th:
 			L = np.hstack([L, dnp]) if L.size > 0 else dnp
@@ -110,6 +110,8 @@ def get_gender_split_nplist(training_data_nplist):
 
 def age_decision_stump(training_data_nplist):
 	age_nplist = get_age_list(training_data_nplist)
+	if age_nplist.size == 1:
+		return age_nplist[0]
 	tmp1 = np.hstack([0, age_nplist[:-2]])
 	tmp2 = age_nplist[1:]
 	stump_nplist = (tmp1 + tmp2)*0.5
@@ -180,51 +182,58 @@ for name in f_names:
 
 F, M = get_gender_split_nplist(training_data_nplist)
 
-stump = age_decision_stump(M)
+if M.size > 0:
+	stump = age_decision_stump(M)
+	stump_age = stump[0] if stump.size > 1 else stump
 
-L, R = get_age_split_nplist(M, stump[0])
-xL, MSEL, AL, BL = train_one_set(L) if L.size > 0 else (-1, 0, 0, 0)
-xR, MSER, AR, BR = train_one_set(R) if R.size > 0 else (-1, 0, 0, 0)
+	L, R = get_age_split_nplist(M, stump_age)
+	xL, MSEL, AL, BL = train_one_set(L) if L.size > 0 else (-1, 0, 0, 0)
+	xR, MSER, AR, BR = train_one_set(R) if R.size > 0 else (-1, 0, 0, 0)
 
-print 'For Male'
-print 'The stump age is {}'.format(stump[0])
-print ""
-if L.size <= 0:
-	print 'all the age is larger than {}'.format(stump[0])
+	print 'For Male'
+	print 'The stump age is {}'.format(stump_age)
+	print ""
+	if L.size <= 0:
+		print 'all the age is larger than {}'.format(stump_age)
+	else:
+		print 'The curve for age < {}: '.format(stump_age)
+		print_result(xL)
+		print 'mean square error is {}'.format(MSEL)
+		plot_sp_sl(AL, BL, xL, 'Male_L')
+	print ""
+	print ""
+	print 'The curve for age > {}: '.format(stump_age)
+	print_result(xR)
+	print 'mean square error is {}'.format(MSER)
+	plot_sp_sl(AR, BR, xR, 'Male_R')
 else:
-	print 'The curve for age < {}: '.format(stump[0])
-	print_result(xL)
-	print 'mean square error is {}'.format(MSEL)
-print ""
-print ""
-print 'The curve for age > {}: '.format(stump[0])
-print_result(xR)
-print 'mean square error is {}'.format(MSER)
-
-plot_sp_sl(AL, BL, xL, 'Male_L')
-plot_sp_sl(AR, BR, xR, 'Male_R')
+	print "no Male data"
 
 print ""
-stump = age_decision_stump(M)
 
-L, R = get_age_split_nplist(M, stump[0])
-xL, MSEL, AL, BL = train_one_set(L) if L.size > 0 else (-1, 0, 0, 0)
-xR, MSER, AR, BR = train_one_set(R) if R.size > 0 else (-1, 0, 0, 0)
+if F.size > 0:
+	stump = age_decision_stump(F)
+	stump_age = stump[0] if stump.size > 0 else stump
 
-print 'For Female'
-print 'The stump age is {}'.format(stump[0])
-print ""
-if L.size <= 0:
-	print 'all the age is larger than {}'.format(stump[0])
+	L, R = get_age_split_nplist(F, stump_age)
+	xL, MSEL, AL, BL = train_one_set(L) if L.size > 0 else (-1, 0, 0, 0)
+	xR, MSER, AR, BR = train_one_set(R) if R.size > 0 else (-1, 0, 0, 0)
+
+	print 'For Female'
+	print 'The stump age is {}'.format(stump_age)
+	print ""
+	if L.size <= 0:
+		print 'all the age is larger than {}'.format(stump_age)
+	else:
+		print 'The curve for age < {}: '.format(stump_age)
+		print_result(xL)
+		print 'mean square error is {}'.format(MSEL)
+		plot_sp_sl(AL, BL, xL, 'Female_L')
+	print ""
+	print ""
+	print 'The curve for age > {}: '.format(stump_age)
+	print_result(xR)
+	print 'mean square error is {}'.format(MSER)
+	plot_sp_sl(AR, BR, xR, 'Female_R')
 else:
-	print 'The curve for age < {}: '.format(stump[0])
-	print_result(xL)
-	print 'mean square error is {}'.format(MSEL)
-print ""
-print ""
-print 'The curve for age > {}: '.format(stump[0])
-print_result(xR)
-print 'mean square error is {}'.format(MSER)
-
-plot_sp_sl(AL, BL, xL, 'Female_L')
-plot_sp_sl(AR, BR, xR, 'Female_R')
+	print "no Female data"
